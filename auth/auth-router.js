@@ -19,4 +19,24 @@ router.post("/register", (req, res) => {
     });
 });
 
+// search for the user via the UserName
+router.post("/login", (req, res) => {
+  let { username, password } = req.body;
+
+  Users.findBy({ username })
+    .then((found) => {
+      // if user found also check that the passwords match
+      console.log(found);
+      if (found && bycrypt.compareSync(password, found[0].password)) {
+        res.status(200).json({ message: "Welcome!" });
+      } else {
+        res.status(401).json({ message: "YOU CAN NOT PASS" });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ errorMessage: err.message });
+    });
+});
+
 module.exports = router;
