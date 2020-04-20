@@ -14,3 +14,14 @@ Guided project for **Node Auth 1** Module.
 - [ ] type `npm run server` to start the API.
 
 Please follow along as the instructor adds authentication to the API.
+
+## Encryption vs Hashing
+
+- for password storage use hashing, because encryption is 2 way, but hashing is one way. Once hashed there is no (easy) way of getting the original strink back.
+
+## Auth Workflow
+
+- register an account
+- login
+- log out
+- restrict access to other users
