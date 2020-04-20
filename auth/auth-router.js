@@ -26,8 +26,8 @@ router.post("/login", (req, res) => {
   Users.findBy({ username })
     .then((found) => {
       // if user found also check that the passwords match
-      console.log(found);
       if (found && bycrypt.compareSync(password, found[0].password)) {
+        req.loggedIn = true;
         res.status(200).json({ message: "Welcome!" });
       } else {
         res.status(401).json({ message: "YOU CAN NOT PASS" });
