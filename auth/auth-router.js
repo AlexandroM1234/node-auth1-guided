@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const Users = require("../users/users-model");
 const bycrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const secrets = require("../api/secrets");
 
 router.post("/register", (req, res) => {
   let user = req.body;
@@ -27,8 +29,10 @@ router.post("/login", (req, res) => {
     .then((found) => {
       // if user found also check that the passwords match
       if (found && bycrypt.compareSync(password, found[0].password)) {
-        req.session.loggedIn = true;
-        res.status(200).json({ message: "Welcome!" });
+        // produce a token
+        const token = createToken(found);
+        // send token to the client
+        res.status(200).json({ message: "Welcome!", token });
       } else {
         res.status(401).json({ message: "YOU CAN NOT PASS" });
       }
@@ -39,18 +43,19 @@ router.post("/login", (req, res) => {
     });
 });
 
-router.get("/logout", (req, res) => {
-  if (req.session) {
-    req.session.destroy((err) => {
-      if (err) {
-        res.status(500).json({ errorMessage: "you cannot logout" });
-      } else {
-        res.status(204).end();
-      }
-    });
-  } else {
-    res.status(204).end();
-  }
-});
+function createToken(user) {
+  const payload = {
+    userId: user.id,
+    username: user.username,
+  };
+
+  const secret = secrets.jwtSecret;
+
+  const options = {
+    expiresIn: "1d",
+  };
+
+  return jwt.sign(payload, secret, options);
+}
 
 module.exports = router;
